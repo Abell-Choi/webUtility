@@ -23,7 +23,7 @@ db = pymysql.connect(
     passwd='', 
     db='API', 
     charset='utf8'
-)
+    )
 
 def search_cache_data_num(url:str):
     db.connect()
@@ -130,6 +130,25 @@ def get_last_num_in_convert_temp():
     d =  "{0}.gif".format(path+convert_dic_name+'/'+str(stack+1))
     return d
 
+@app.route('/getconvertdata', methods=['GET'])
+def getConvertData():
+    req = request.args.get('num')
+    if req == None:
+        res = search_cache_data_for_num(0)
+
+    try:
+        i = int(req)
+        if search_cache_data_for_num(i) == None: res = search_cache_data_for_num(0)
+        else : res = search_cache_data_for_num(i)
+    except Exception as e:
+        res = search_cache_data_for_num(0)
+    
+    with open('{0}{1}/dump.gif'.format(path, convert_dic_name), 'wb') as fh:
+        fh.write(res)
+    
+    return send_file('{0}{1}/dump.gif'.format(path, convert_dic_name), 'image/gif')
+
+
 @app.route('/convertmp4togif', methods=['POST'])
 def conv():
     objPostData = request.values.to_dict()
@@ -145,24 +164,9 @@ def conv():
             return json.dumps({'res' : 'err', 'value' : 'some err'})
         convRes = mp4_to_gif(downRes)
         insert_cache_data(objPostData['url'], convRes)
-        return send_file(convRes, mimetype='image/gif')
-        
-    res = search_cache_data_for_num(nNum)
-    fName = get_last_num_in_convert_temp()
-    f = open(fName, 'wb')
-    f.write(res)
-    f.close()
-    return fName
-    return send_file(fName, mimetype='image/gif')
-        
-
+    
+    return {'res' : 'ok', 'value' : '/getconvertdata?num={0}'.format(nNum)}
 
 if __name__ == '__main__':
-    #check_path_provider()
-    #search_cache_data_num('test')
-    #testUrl = 'https://ac-p.namu.la/02/025be9ace545c8a489d19fe2bccf241a90e069ab71be4187389241ef8e5f3096.mp4'
-    #res = download_mp4(testUrl, path +download_dic_name+'/'+testUrl.split('/'))
-    #print(res)
-    #urllib.request.urlretrieve(testUrl,'{0}/down_temp/test.mp4'.format(path,download_dic_name))
-
+    
     app.run(host='0.0.0.0', port=8080, debug=True)
