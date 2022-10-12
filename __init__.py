@@ -169,7 +169,7 @@ def conv():
     
 
     # 학교 과제단
-@app.route('/getconvertdata', methods=['GET'])
+@app.route('/sendmessage', methods=['GET'])
 def getConvertData():
     req:dict = request.args.get
     if not 'msg' in req.keys:
