@@ -166,6 +166,16 @@ def conv():
         insert_cache_data(objPostData['url'], convRes)
     
     return {'res' : 'ok', 'value' : '/getconvertdata?num={0}'.format(nNum)}
+    
+
+    # 학교 과제단
+@app.route('/getconvertdata', methods=['GET'])
+def getConvertData():
+    req:dict = request.args.get
+    if not 'msg' in req.keys:
+        return json.dumps({'res' : 'err', 'value' : 'need msg in get data'})
+    
+    return request.args.get['msg']
 
 if __name__ == '__main__':
     
