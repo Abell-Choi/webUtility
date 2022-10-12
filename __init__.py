@@ -170,12 +170,12 @@ def conv():
 
     # 학교 과제단
 @app.route('/sendmessage', methods=['GET'])
-def getConvertData():
-    req:dict = request.args.get
-    if not 'msg' in req.keys:
+def sendMessage():
+    req = request.args.get('msg')
+    if req == None:
         return json.dumps({'res' : 'err', 'value' : 'need msg in get data'})
     
-    return request.args.get['msg']
+    return request.args.get('msg')
 
 if __name__ == '__main__':
     
